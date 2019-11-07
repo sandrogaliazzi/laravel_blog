@@ -16,3 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/coment', 'ComentController@store')->name('coment.create');
+Route::post('/editComent', 'ComentController@edit');
+Route::get('/showComent/{id}', 'ComentController@show');
+Route::get('/loadcoments/{id}', 'ComentController@loadComents');
+Route::put('/updateComent', 'ComentController@update');

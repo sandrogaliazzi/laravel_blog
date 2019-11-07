@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Post;
 
 class UserController extends Controller
 {
@@ -14,9 +15,10 @@ class UserController extends Controller
 
     public function showAdminPanel(){
         
-        $user = Auth::user();
+        $id = Auth::user()->id;
 
-        var_dump($user->id);
-        //return view('users.dashboard');
+        $posts = Post::where('author_id', $id)->get();
+
+        return view('users.dashboard')->with('posts', $posts);
     }
 }

@@ -15,6 +15,7 @@ Auth::routes();
 
 Route::get('/', 'postController@index')->name('home');
 Route::get('/dashboard', 'UserController@showAdminPanel')->name('user.dashboard');
+Route::get('/loadcoments', 'ComentController@loadComents');
 
 Route::group(['prefix' => 'post'], function () {
     Route::get('{id}', 'postController@show')->name('post.get');

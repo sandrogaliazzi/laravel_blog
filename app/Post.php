@@ -11,4 +11,8 @@ class Post extends Model
     public function author(){
         return $this->belongsTo('App\User');
     }
+
+    public function coments(){
+        return $this->hasMany('App\Coment', 'post_id');
+    }
 }

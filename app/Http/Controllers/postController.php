@@ -50,9 +50,7 @@ class postController extends Controller
     {
         $post = Post::find($id);
 
-        $author = $post->author->name;
-
-        return view('posts.post')->with(compact('post', 'author'));
+        return view('posts.post')->with(compact('post'));
     }
 
     /**
