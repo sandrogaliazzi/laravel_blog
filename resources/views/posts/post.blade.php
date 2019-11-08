@@ -24,10 +24,14 @@
                                     value="{{(Auth::check()) ? Auth::user()->id : ''}}">
                                 <input type="hidden" name="post_id" value="{{$post->id}}">
                             </div>
-                            <button type="submit" class="btn btn-primary">Comentar</button>
+                            @if(Auth::check())
+                                <button type="submit" class="btn btn-primary">Comentar</button>
+                            @else
+                                <a class="btn btn-primary" href="{{route('login')}}">Login</a>
+                            @endif        
                         </form>
                         <div id="comentsContainer">
-                            @include('posts.coments')
+                            <!--@include('posts.coments')-->
                         </div>
                     </div>
                 </div>
@@ -42,6 +46,10 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+            $(document).ready(()=>{
+                loadComents({{$post->id}})
+            })
     
             const loadComents = (id) =>{
                 $.get(`http://localhost:8000/api/loadcoments/${id}`, response => {
@@ -60,6 +68,22 @@
                     $(`#coment${id}`).html(response);
                     
                 });
+            }
+
+            $.fn.deleteComent = (id) =>{
+                event.preventDefault();
+                if(confirm("deseja excluir este comentário permanentemente?")){
+                    $.ajax({
+                        url:'http://localhost:8000/api/deleteComent'+id,
+                        type:'DELETE',
+                        success:(response)=>{
+                            loadComents(response.post_id);
+                        },
+                        error:()=>{
+                            alert('não foi possivel excluir este comentário no momento');
+                        }
+                    });
+                }
             }
     
             $('#comentForm').on('submit', (e)=>{

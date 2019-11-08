@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Coment;
 use App\Post;
+
 
 class ComentController extends Controller
 {
@@ -21,11 +23,13 @@ class ComentController extends Controller
         return response()->json($coment);
     }
 
-    public function loadComents($postId)
+    public function loadComents(Request $request, $postId)
     {
         $post = Post::find($postId);
 
-        $html = view('posts.coments', compact('post'))->render();
+        $user = 1;//$request->session()->get('user', '0');
+
+        $html = view('posts.coments', compact('post', 'user'))->render();
 
         return response()->json($html);
     }
@@ -50,5 +54,14 @@ class ComentController extends Controller
         if($coment->save()){
             return response()->json(['status'=>200, 'coment'=>$coment]);
         }
+    }
+
+    public function destroy($id)
+    {
+        $coment = Coment::find($id);
+
+        $coment->delete();
+
+        return response()->json($coment);
     }
 }

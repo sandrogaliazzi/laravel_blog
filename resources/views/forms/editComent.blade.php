@@ -12,6 +12,7 @@
         const id = $("input[name='comentId']").val();
 
         $('#btnCancel').click(()=>{
+            event.preventDefault();
            getComent(id);
         });
 

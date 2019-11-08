@@ -20,5 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/coment', 'ComentController@store')->name('coment.create');
 Route::post('/editComent', 'ComentController@edit');
 Route::get('/showComent/{id}', 'ComentController@show');
-Route::get('/loadcoments/{id}', 'ComentController@loadComents');
+Route::get('/loadcoments/{id}', 'ComentController@loadComents')->middleware('web');
 Route::put('/updateComent', 'ComentController@update');
+Route::delete('/deleteComent{id}', 'ComentController@destroy');
