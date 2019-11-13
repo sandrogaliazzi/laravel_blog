@@ -18,5 +18,10 @@ Route::get('/dashboard', 'UserController@showAdminPanel')->name('user.dashboard'
 Route::get('/loadcoments', 'ComentController@loadComents');
 
 Route::group(['prefix' => 'post'], function () {
+    Route::get('create', 'postController@create')->name('post.create');
     Route::get('{id}', 'postController@show')->name('post.get');
+    Route::post('store', 'postController@store')->name('post.store');
+    Route::get('edit/{id}', 'postController@edit')->name('post.edit');
+    Route::put('update/{id}', 'postController@update')->name('post.update');
+    Route::get('destroy/{id}', 'postController@destroy')->name('post.destroy');
 });

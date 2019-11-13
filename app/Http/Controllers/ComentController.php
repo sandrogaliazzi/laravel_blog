@@ -23,24 +23,22 @@ class ComentController extends Controller
         return response()->json($coment);
     }
 
-    public function loadComents(Request $request, $postId)
+    public function loadComents(Request $request)
     {
-        $post = Post::find($postId);
+        $post = Post::find($request->postId);
 
-        $user = 1;//$request->session()->get('user', '0');
+        $userId = $request->userId;
 
-        $html = view('posts.coments', compact('post', 'user'))->render();
+        $html = view('posts.coments', compact('userId', 'post'))->render();
 
         return response()->json($html);
     }
 
     public function edit(Request $request)
     {
-        $coment = $request->content;
+        $coment = Coment::find($request->id);
 
-        $id = $request->id;
-
-        $html = view('forms.editComent', compact('coment', 'id'))->render();
+        $html = view('forms.editComent', compact('coment'))->render();
 
         return response()->json($html);
     }

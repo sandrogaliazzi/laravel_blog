@@ -17,9 +17,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/coment', 'ComentController@store')->name('coment.create');
-Route::post('/editComent', 'ComentController@edit');
-Route::get('/showComent/{id}', 'ComentController@show');
-Route::get('/loadcoments/{id}', 'ComentController@loadComents')->middleware('web');
-Route::put('/updateComent', 'ComentController@update');
-Route::delete('/deleteComent{id}', 'ComentController@destroy');
+
+Route::group(['prefix' => 'coment'], function () {
+    Route::post('create', 'ComentController@store')->name('coment.create');
+    Route::post('edit', 'ComentController@edit')->name('coment.edit');
+    Route::get('show/{id}', 'ComentController@show')->name('coment.show');
+    Route::post('load', 'ComentController@loadComents')->name('coment.load');
+    Route::put('update', 'ComentController@update')->name('coment.update');
+    Route::delete('delete/{id}', 'ComentController@destroy')->name('coment.destroy');
+});
+
+

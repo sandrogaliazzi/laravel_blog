@@ -1,37 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<div>
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col col-md-8">
-            <h1 class="my-5">{{$post->title}}</h1>
-            <img width="100%" src="{{$post->path_to_image}}" alt="post image">
-            <p class="mt-4">{{$post->content}}</p>
-            <span>Autor: {{$post->author->name}}</span>
+        <div class="col col-md-10">
+            <h1 class="mb-5">{{$post->title}}</h1>
+            <p class="lead">Autor: {{$post->author->name}}</p>
+            <hr>
+            <p>Postado em {{$post->created_at->format('d/m/Y')}}</p>
+            <hr>
+            <img class="img-fluid rounded" src="{{asset('storage/'.$post->path_to_image)}}" alt="post image">
+            <p class="mt-5 lead" style="font-family:roboto">{!! nl2br(e($post->content)) !!}</p>
         </div>
     </div>
     <div class="mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-10">
                 <div class="card">
-                    <h5 class="card-header">comentários</h5>
+                    <h5 class="card-header">deixe um comentário</h5>
                     <div class="card-body">
                         <form id="comentForm">
                             <div class="form-group">
                                 <textarea type="text" id="content" class="form-control" rows="4"
                                     placeholder="deixe seu comentário"></textarea>
-                                <input type="hidden" name="author_id"
-                                    value="{{(Auth::check()) ? Auth::user()->id : ''}}">
-                                <input type="hidden" name="post_id" value="{{$post->id}}">
                             </div>
                             @if(Auth::check())
-                                <button type="submit" class="btn btn-primary">Comentar</button>
+                                <button type="submit" id="btnSave" disabled class="btn btn-primary">Comentar</button>
                             @else
                                 <a class="btn btn-primary" href="{{route('login')}}">Login</a>
                             @endif        
                         </form>
                         <div id="comentsContainer">
-                            <!--@include('posts.coments')-->
                         </div>
                     </div>
                 </div>
@@ -39,7 +38,10 @@
         </div>
     </div>
 </div>
-<script>
+@if(Session::has('updateMessage'))
+    <script>alert('{{Session::get("updateMessage")}}')</script>
+@endif    
+<script>    
     $(function(){
             $.ajaxSetup({
                 headers: {
@@ -48,52 +50,67 @@
             });
 
             $(document).ready(()=>{
-                loadComents({{$post->id}})
+                loadComents();
             })
+
+            $('#content').keyup(()=>{
+                if($('#content').val().length > 0){
+                    $('#btnSave').attr('disabled', false);
+                } else {
+                    $('#btnSave').attr('disabled', true);
+                }
+            });
+
+           const getUserId = () =>{
+               return  {{(Auth::check()) ? Auth::user()->id : 0}};
+           }
     
-            const loadComents = (id) =>{
-                $.get(`http://localhost:8000/api/loadcoments/${id}`, response => {
+            const loadComents = () =>{
+                $.post('{{route("coment.load")}}', {
+                    postId:{{$post->id}},
+                    userId: getUserId(),
+                } ,response => {
                     $('#comentsContainer').html(response);
                 });
             }
             
-            $.fn.editComent = (id) =>{
+            $('body').on('click', '#btnEdit', ()=>{
                 event.preventDefault();
-                const content = $(`#coment${id} p`).text();
-
-                $.post('http://localhost:8000/api/editComent', {
-                    content: content,
-                    id: id
+                const id = $("#btnEdit").data("id");
+                $.post('{{route("coment.edit")}}', {
+                    id:id
                 }, (response)=>{
                     $(`#coment${id}`).html(response);
                     
                 });
-            }
+            });
 
-            $.fn.deleteComent = (id) =>{
+            $('body').on('click', '#btnDelete', ()=>{
                 event.preventDefault();
+                const id = $("#btnDelete").data("id");
+                const url = '{{route("coment.destroy", ":id")}}';
                 if(confirm("deseja excluir este comentário permanentemente?")){
                     $.ajax({
-                        url:'http://localhost:8000/api/deleteComent'+id,
+                        url:url.replace(':id', id),
                         type:'DELETE',
-                        success:(response)=>{
-                            loadComents(response.post_id);
+                        success:()=>{
+                            loadComents();
                         },
                         error:()=>{
                             alert('não foi possivel excluir este comentário no momento');
                         }
                     });
-                }
-            }
+                } 
+            });
     
             $('#comentForm').on('submit', (e)=>{
                 e.preventDefault();
-                const content = $('#content').val();
-                const author = $('input[name="author_id"]').val();
-                const post = $('input[name="post_id"]').val();
+                let content = $('#content').val();
+                let author = getUserId();
+                let post = {{$post->id}};
     
                 $.ajax({
-                    url: 'http://localhost:8000/api/coment',
+                    url: '{{route("coment.create")}}',
                     type:'POST',
                     data:{
                         content: content,
@@ -101,7 +118,8 @@
                         post_id: post
                     },
                     success: ()=>{
-                        loadComents(post);
+                        loadComents();
+                        $('#comentForm').trigger('reset');
                     },
     
                     error: (error) =>{

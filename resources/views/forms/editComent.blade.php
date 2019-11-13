@@ -1,7 +1,6 @@
 <form id="editForm">
     <div class='form-group'>
-        <input name="comentId" type="hidden" value="{{$id}}">
-        <textarea class="form-control" onkeyup="editedComent = $(this).val()" id="editedComentContent" rows="3">{{$coment}}</textarea>
+        <textarea class="form-control" id="editedComentContent" rows="3">{{$coment->content}}</textarea>
     </div>
     <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
     <button id="btnCancel" class="btn btn-secondary btn-sm">Cancelar</button>
@@ -9,15 +8,16 @@
 <script>
     $(function(){
 
-        const id = $("input[name='comentId']").val();
+        const id = {{$coment->id}};
 
         $('#btnCancel').click(()=>{
             event.preventDefault();
-           getComent(id);
+            getComent(id);
         });
 
         const getComent = (id) =>{
-            $.get('http://localhost:8000/api/showComent/'+id, (response)=>{
+            const url = '{{route("coment.show", ":id")}}'
+            $.get(url.replace(':id', id), (response)=>{
                 $('#editForm').parent().html("<p class='mb-1'>"+response.content+"</p>");
             });  
         }
@@ -26,7 +26,7 @@
             e.preventDefault();
             let editedComent = $('#editedComentContent').val();
             $.ajax({
-                url:'http://localhost:8000/api/updateComent',
+                url:'{{route("coment.update")}}',
                 type:'PUT',
                 data:{
                     id: id,
@@ -40,7 +40,7 @@
                 error:(err)=>{
                     alert(err);
                 }
-            })
-        })
+            });
+        });
     })
 </script>

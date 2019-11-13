@@ -12,22 +12,22 @@
                         <div id="coment{{$coment->id}}" class="col-md-12">
                             <p class="mb-1">{{$coment->content}}</p>
                         </div>
-                            @if($user->id === $coment->author_id)  
+                        @if($userId == $coment->author_id)
                             <div class="dropdown">
                                 <button class="btn" data-toggle="dropdown" aria-expanded="false">
                                     <i class="material-icons">more_vert</i>
                                 </button>
-                                  
                                 <div class="dropdown-menu">
-                                    <a href="" onclick="$().editComent({{$coment->id}})"   style="cursor:pointer" class="dropdown-item">
+                                    <a href="" id="btnEdit" data-id="{{$coment->id}}" style="cursor:pointer"
+                                        class="dropdown-item">
                                         <i class="material-icons">create</i> Editar
                                     </a>
-                                    <a href="" onclick="$().deleteComent({{$coment->id}})" class="dropdown-item">
+                                    <a href="" id="btnDelete"  data-id="{{$coment->id}}" class="dropdown-item">
                                         <i class="material-icons">delete</i> Excluir
                                     </a>
                                 </div>
-                            @endif        
-                        </div>
+                            </div>
+                        @endif    
                     </div>
                 </div>
             </div>
